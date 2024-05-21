@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import ListModal from './ListModal';
+import CategoryModal from './CategoryModal';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import themeColors from '../../../../assets/styles/themeColors';
 
+
 const TouchTextBox = ({ text }) => {
+  
   const [modalVisible, setModalVisible] = useState(false);
 
   const toggleModal = () => {
@@ -29,7 +31,7 @@ const TouchTextBox = ({ text }) => {
       </TouchableOpacity>
 
       {modalVisible && (
-        <ListModal
+        <CategoryModal
           isVisible={modalVisible}
           onClose={toggleModal}
           classType={classPropsForListModal}

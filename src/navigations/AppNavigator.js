@@ -1,16 +1,16 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {createStackNavigator} from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
-
 // screen
 import HomeScreen from '../screens/Home/HomeScreen';
-import GoalScreen from '../screens/Goal/GoalScreen';
 import HowToScreen from '../screens/HowTo/HowToScreen';
 import CommunityScreen from '../screens/Community/CommunityScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import themeColors from '../../assets/styles/themeColors';
+
 
 const homeName='메인홈';
 const communityName = '커뮤니티';
@@ -20,6 +20,8 @@ const settingName = '내정보';
 
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
 
 function AppNavigator() {
   return (
@@ -27,14 +29,23 @@ function AppNavigator() {
           <Tab.Navigator
               initialRouteName={homeName} 
               
-              tabBarOptions={{
-                  tabStyle : {height: 70},
-                  labelStyle: {paddingBottom:10, fontSize: 15},
-                  activeTintColor: themeColors.yellow0,
-                  inactiveTintColor: themeColors.white0,
-              }}
+              // tabBarOptions={{
+              //     tabStyle : {height: 70},
+              //     labelStyle: {paddingBottom:10, fontSize: 15},
+              //     activeTintColor: themeColors.yellow0,
+              //     inactiveTintColor: themeColors.white0,
+              // }}
 
               screenOptions={{
+                  tabBarActiveTintColor : themeColors.yellow0,  
+                  tabBarInactiveTintColor : themeColors.white0,
+                  tabBarLabelStyle : {
+                    paddingBottom : 10,
+                    fontSize : 15
+                  },
+                  tabBarItemStyle : {
+                    display : "flex"
+                  },
                   tabBarShowLabel: false,
                   tabBarStyle: {paddingBottom: 10, paddingTop: 10, height: 110, backgroundColor:themeColors.navy1}
               }}
@@ -48,14 +59,6 @@ function AppNavigator() {
                 ),
               }}
                   />
-              <Tab.Screen 
-              name={manageName} 
-              component={GoalScreen}
-              options={{ tabBarIcon: ({ color, size }) => (
-                  <Ionicons name="today" color={color} size={size} />
-                ),
-              }}
-              />
               <Tab.Screen 
               name={howtoName} 
               component={HowToScreen}

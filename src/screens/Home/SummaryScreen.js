@@ -1,17 +1,17 @@
 import {View, Text, StyleSheet, Dimensions, TouchableOpacity, ScrollView} from 'react-native';
-import { LineChart, ProgressChart, StackedBarChart, PieChart } from 'react-native-chart-kit';
+import { LineChart, BarChart } from 'react-native-chart-kit';
 
 import themeColors from '../../../assets/styles/themeColors';
 
 const screenWidth = Dimensions.get('window').width;
 
-const chartConfig = {
-    backgroundColor: '#e26a00',
-    backgroundGradientFrom: '#fb8c00',
-    backgroundGradientTo: '#ffa726',
-    decimalPlaces: 2, // 소수점 두 자리까지 표시
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+const chartConfig1 = {
+    backgroundColor: themeColors.white0,
+    backgroundGradientFrom: themeColors.white0,
+    backgroundGradientTo: themeColors.white0,
+    decimalPlaces: 1,
+    color: (opacity = 1) => `rgba(40, 55, 71, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(40, 55, 71, ${opacity})`,
     style: {
       borderRadius: 16
     },
@@ -19,121 +19,102 @@ const chartConfig = {
       r: '6',
       strokeWidth: '2',
       stroke: themeColors.navy0
-    }
+    },
+    propsForLabels: {
+      fontSize: 16,
+    },
 };
 
+const chartConfig2 = {
+  backgroundColor: themeColors.white0,
+  backgroundGradientFrom: themeColors.white0,
+  backgroundGradientTo: themeColors.white0,
+  decimalPlaces: 0,
+  color: (opacity = 1) => `rgba(40, 55, 71, ${opacity})`,
+  labelColor: (opacity = 1) => `rgba(40, 55, 71, ${opacity})`,
+  style: {
+    borderRadius: 16
+  },
+  propsForDots: {
+    r: '6',
+    strokeWidth: '2',
+    stroke: themeColors.navy0
+  },
+  propsForLabels: {
+    fontSize: 16,
+  },
+};
+
+const weightData = {
+  labels: ['5/11', '5/12', '5/13', '5/14', '5/15'],
+  datasets: [
+    {
+      data: [69.5, 70, 70.5, 68, 68.5],
+    },
+  ],
+};
+
+
+const Caloriedata = {
+    labels: ["5/10", "5/11", "5/12", "5/13", "5/14", "5/15"],
+    datasets: [
+      {
+        data: [2000, 2100, 2200, 2300, 2400, 2100],
+        color: (opacity = 1) => themeColors.navy0,
+        strokeWidth: 2
+      },{
+        data: [1500, 1700, 1600, 1500, 1400, 1700],
+        color: (opacity = 1) => themeColors.yellow0,
+        strokeWidth: 2            
+      }
+    ],
+    legend: ["섭취 칼로리", "소모 칼로리"]
+
+  };
+
 function SummaryScreen(){
-    const data1 = {
-      labels: ["Swim", "Bike", "Run"], // optional
-      data: [0.4, 0.6, 0.8]
-    };
-
-    const data2 = {
-        labels: ["1월", "2월", "3월", "4월", "5월", "6월"],
-        datasets: [
-          {
-            data: [20, 45, 28, 80, 99, 43],
-            color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
-            strokeWidth: 2
-          },{
-            data: [70, 60, 22, 43, 64, 58],
-            color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
-            strokeWidth: 2            
-          }
-        ],
-        legend: ["차트 데모"]
-      };
-
-      const data3 = {
-        labels: ["Test1", "Test2"],
-        legend: ["L1", "L2", "L3"],
-        data: [
-          [60, 60, 60],
-          [30, 30, 60]
-        ],
-        barColors: ["#dfe4ea", "#ced6e0", "#a4b0be"]
-      };
-
-      const data4 = [
-        {
-          name: "Seoul",
-          population: 21500000,
-          color: "rgba(131, 167, 234, 1)",
-          legendFontColor: "#7F7F7F",
-          legendFontSize: 15
-        },
-        {
-          name: "Toronto",
-          population: 2800000,
-          color: "#F00",
-          legendFontColor: "#7F7F7F",
-          legendFontSize: 15
-        },
-        {
-          name: "Beijing",
-          population: 527612,
-          color: "red",
-          legendFontColor: "#7F7F7F",
-          legendFontSize: 15
-        },
-        {
-          name: "New York",
-          population: 8538000,
-          color: "#ffffff",
-          legendFontColor: "#7F7F7F",
-          legendFontSize: 15
-        },
-        {
-          name: "Moscow",
-          population: 11920000,
-          color: "rgb(0, 0, 255)",
-          legendFontColor: "#7F7F7F",
-          legendFontSize: 15
-        }
-      ];
 
     return(
     <ScrollView>
-        <ProgressChart
-        style={{marginVertical: 10}}
-        data={data1}
-        width={screenWidth}
-        height={220}
-        strokeWidth={16}
-        radius={32}
-        chartConfig={chartConfig}
-        hideLegend={false}
+        <Text style={{fontSize:22, margin:15, fontWeight: 'bold'}}>최근 기록을 차트로 확인해보세요!</Text>
+        <Text style={styles.header}>몸무게 변화</Text>
+        <BarChart
+          style={styles.chart}
+          data={weightData}
+          width={screenWidth}
+          height={220}
+          chartConfig={chartConfig1}
+          verticalLabelRotation={30}
         />
 
+        <Text style={styles.header}>섭취칼로리/소모칼로리</Text>
         <LineChart
             style={{marginVertical: 10}}
-            data={data2}
+            data={Caloriedata}
             width={screenWidth}
             height={220}
-            chartConfig={chartConfig}
+            chartConfig={chartConfig2}
+            withShadow={true}
+            props
         />
-        <PieChart
-            data={data4}
-            width={screenWidth}
-            height={220}
-            chartConfig={chartConfig}
-            accessor={"population"}
-            backgroundColor={"transparent"}
-            paddingLeft={"15"}
-            center={[10, 0]}
-        />
-
-        <StackedBarChart
-            style={{marginVertical: 10}}
-            data={data3}
-            width={screenWidth}
-            height={220}
-            chartConfig={chartConfig}
-        />
-
-
     </ScrollView>
     );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+  },
+  header: {
+    fontSize: 20,
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  chart: {
+    marginVertical: 10,
+  },
+});
+
 
 export default SummaryScreen;
