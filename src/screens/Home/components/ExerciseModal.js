@@ -2,84 +2,72 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, TextInput, ScrollView, Dimensions } from 'react-native';
 import { exerciseArr, exercise_back_arr, exercise_chest_Arr, FoodArr } from './data/category-list';
 import axios from 'axios';
-
-
 import themeColors from '../../../../assets/styles/themeColors';
 
-
-const ExerciseModal = ({ isVisible, onClose}) => {
-  const [searchQuery, setSearchQuery] = useState('');
+const ExerciseModal = ({ isVisible, onClose }) => {
   const [modalView, setModalView] = useState('bodyPart');
   const [nameList, setNameList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
 
-  useEffect(()=> {
-    const fetchData = async () => {
-      try{
-        const response = await axios.post('http://52.68.188.192:8080/backend/exercise/search')
-        const nameList = response.data.map(item => item.name);
-        setNameList(nameList);
-      }catch(error) {
-        console.error('http error, post', error)
-      }
-    };
-    fetchData();
-  }, [])
-
-
-  const handleButtonPress = (buttonName) => {
-    console.log(`${buttonName} 버튼이 눌렸습니다.`);
-    setModalView('workOut');
+  const fetchData = async (muscle) => {
+    try {
+      const response = await axios.post('http://52.68.188.192:8080/backend/exercise/part', 
+        {}, 
+        { params: { muscle } }
+      );
+      const fetchedNameList = response.data.map(item => item.name);
+      console.log(fetchedNameList);
+      console.log(muscle, "버튼이 눌렸습니다.");
+      setNameList(fetchedNameList);
+    } catch (error) {
+      console.error('http error, post', error);
+    }
   };
 
-  let categoryList = exerciseArr;
-  let categoryTitle = "운동";
-  let workOutList;
+  const handleSearch = () => {
+    fetchData(searchQuery);
+  };
 
-
-  const filteredCategoryList = categoryList.filter(item =>
-    item.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
+  const handleButtonPress = (muscle) => {
+    setModalView('workOut');
+    fetchData(muscle);
+  };
 
   const render = () => {
-    if(modalView === 'bodyPart'){
-      return(
-          <View style={styles.buttonContainer}>
-            {filteredCategoryList.map((buttonName, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.button}
-                onPress={() => handleButtonPress(buttonName)}
-              >
-                <Text style={styles.buttonText}>{buttonName}</Text>
+    if (modalView === 'bodyPart') {
+      return (
+        <View style={styles.buttonContainer}>
+          {exerciseArr.map((buttonName, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.button}
+              onPress={() => handleButtonPress(buttonName)}
+            >
+              <Text style={styles.buttonText}>{buttonName}</Text>
             </TouchableOpacity>
           ))}
         </View>
-      ) 
-    }
-    else if(modalView === 'workOut'){
-      return(
-        <View style = {{height : 270, width: '100%'}}>
-            <TouchableOpacity style= {{justifyContent: 'flex-end', flexDirection: 'row', padding : 10}} onPress={() => setModalView('bodyPart')}>
-              <Text>뒤로가기</Text>
-            </TouchableOpacity>
-            <ScrollView style={styles.scrollView}>
-                {nameList.map((name, index) => (
-                  <TouchableOpacity style = {styles.workOutButton}>
-                    <Text style={styles.buttonText} key={index}>{name}</Text>
-                  </TouchableOpacity>
-                ))}
-            </ScrollView>
+      );
+    } else if (modalView === 'workOut') {
+      return (
+        <View style={{ height: 270, width: '100%' }}>
+          <TouchableOpacity style={{ justifyContent: 'flex-end', flexDirection: 'row', padding: 10 }} onPress={() => setModalView('bodyPart')}>
+            <Text>뒤로가기</Text>
+          </TouchableOpacity>
+          <ScrollView style={styles.scrollView}>
+            {nameList.map((name, index) => (
+              <TouchableOpacity key={index} style={styles.workOutButton}>
+                <Text style={styles.buttonText}>{name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
       );
+    } else {
+      return <View></View>;
     }
-    else{
-      return(
-        <View></View>
-      );
-    }
-  }
+  };
 
   return (
     <Modal
@@ -89,19 +77,17 @@ const ExerciseModal = ({ isVisible, onClose}) => {
       onRequestClose={onClose}
     >
       <View style={styles.modalView}>
-        <Text style={styles.modalTitle}>{categoryTitle}</Text>
+        <Text style={styles.modalTitle}>운동 계획하기</Text>
         <TextInput
           style={styles.searchInput}
           placeholder="검색어를 입력하세요"
           value={searchQuery}
           onChangeText={setSearchQuery}
+          onSubmitEditing={handleSearch}
         />
-
-          {render()}
-          
-
+        {render()}
         <View style={styles.modalInputView}>
-            <Text style={styles.modalInputText}>test</Text>
+          <Text style={styles.modalInputText}>test</Text>
         </View>
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
           <Text style={styles.closeButtonText}>닫기</Text>

@@ -35,7 +35,6 @@ function ProfileScreen() {
         </View>
         <View style={styles.buttonContainer}>
           <ProfileButton ButtonCategory="작성게시글" />
-          <ProfileButton ButtonCategory="작성댓글" />
           <ProfileButton ButtonCategory="즐겨찾기" />
         </View>
       </View>

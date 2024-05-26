@@ -3,7 +3,7 @@ import React from 'react'
 
 import themeColors from '../../../../assets/styles/themeColors'
 
-const Calendar = () => {
+const Calendar = ({ onDateSelected }) => {
         return <CalendarStrip
             scrollable={true}
             calendarAnimation={{type: 'sequence', duration: 30}}
@@ -21,6 +21,7 @@ const Calendar = () => {
             // datesBlacklist={datesBlacklist}
             // iconLeft={require('./img/left-arrow.png')}
             // iconRight={require('./img/right-arrow.png')}
+            onDateSelected={onDateSelected}
             iconContainer={{flex: 0.1}}
         />
 }

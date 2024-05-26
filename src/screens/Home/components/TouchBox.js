@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 
 import ExerciseModal from './ExerciseModal';
+import DietaryModal from './DietaryModal'
 import themeColors from '../../../../assets/styles/themeColors';
 
 const TouchBox = ({ select_category }) => {
@@ -12,17 +13,24 @@ const TouchBox = ({ select_category }) => {
         setModalVisible(!modalVisible);
     };
 
-    let classPropsForListModal = null;
-  
-    if (select_category === "운동기록") {
-        classPropsForListModal = 1;
-    } else if (select_category === "식단기록") {
-        classPropsForListModal = 2;
-    } else if (select_category === "몸상태") {
-        classPropsForListModal = 3;
-    } else {
-        classPropsForListModal = 0;
-    }
+    const renderModal = () => {
+        if (select_category === '운동') {
+            return (
+                <ExerciseModal
+                    isVisible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                />
+            );
+        } else if (select_category === '식단') {
+            return (
+                <DietaryModal
+                    isVisible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                />
+            );
+        }
+        return null;
+    };
 
     return (
         <View>
@@ -31,16 +39,11 @@ const TouchBox = ({ select_category }) => {
                     <View style={styles.textView}>
                         <Text style={{ fontSize: 25, marginBottom: 8}}>{select_category}</Text>
                         {textList.map((text, index) => (
-                            <Text style={{fontSize: 18}} key={index}>{text}</Text> // 매 클릭마다 업데이트된 텍스트 목록을 렌더링
+                            <Text style={{fontSize: 18}} key={index}>{text}</Text>
                         ))}
                     </View>
                 </View>
-                {modalVisible && (
-                    <ExerciseModal
-                        isVisible={modalVisible}
-                        onClose={() => setModalVisible(false)}
-                    />
-                )}
+                {modalVisible && renderModal()}
             </TouchableOpacity>
         </View>
     );

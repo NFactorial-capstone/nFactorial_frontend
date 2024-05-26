@@ -12,22 +12,26 @@ import themeColors from '../../../assets/styles/themeColors';
 const PlanScreen = () => {
 
   const [weight, setWeight] = useState('0');
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const handleWeightChange = (newWeight) => {
       setWeight(newWeight);
       console.log("Updated weight:", newWeight);
   };
 
+  const handleDateSelected = (date) => {
+    setSelectedDate(date);
+  };
 
   return (
     <View style={{justifyContent: 'center', alignContent: 'center'}}>
       <ScrollView>
-          <Calendar />
-          <ProgressBox gauge= "0" style={{marginTop: 20}}/>
+          <Calendar onDateSelected={handleDateSelected} />
+          {selectedDate && <Text>선택된 날짜: {selectedDate.format('YYYY-MM-DD')}</Text>}
+          <ProgressBox gauge= "0"/>
           <PhysicalBox onWeightChange = {handleWeightChange}/>
-          <TouchBox select_category="운동기록"/>
-          <TouchBox select_category="식단기록"/>
-          <TouchBox select_category="몸상태"/>
+          <TouchBox select_category="운동"/>
+          <TouchBox select_category="식단"/>
       </ScrollView>
 
     </View>
