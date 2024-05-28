@@ -1,37 +1,29 @@
-import React, { useState, useEffect } from "react";
-import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
-import * as AuthSession from 'expo-auth-session';
-import AppNavigator from '../../navigations/AppNavigator'; 
-
-const redirectUri = AuthSession.makeRedirectUri({
-  useProxy: true,
-});
+import React from "react";
+import { Text, TouchableOpacity, View, StyleSheet, Image, ImageBackground } from "react-native";
+import * as Linking from 'expo-linking';
+import themeColors from "../../../assets/styles/themeColors";
 
 const Login = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  const link = async () => {
-    const authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=4b014e54e818307875e7f719754a5313&redirect_uri=${redirectUri}&response_type=code`;
-    const result = await AuthSession.startAsync({ authUrl });
-    
-    if (result.type === 'success') {
-      const authCode = result.params.code;
-      console.log("Authorization Code:", authCode);
-      setLoggedIn(true);
-    }
+  const link = () => {
+    Linking.openURL("https://kauth.kakao.com/oauth/authorize?client_id=4b014e54e818307875e7f719754a5313&redirect_uri=http://52.68.188.192:8080/backend/login&response_type=code");
   };
 
-  if (loggedIn) {
-    return <AppNavigator />;
-  }
-
   return (
-    <View style={styles.outerContainer}>
-      <Text>환영합니다. N!과 함께 활기차고 건강한 생활을 해보아요!</Text>
+    <ImageBackground 
+      source={require('../../../assets/images/background_img_3.webp')} 
+      style={styles.outerContainer}
+    >
+      <View style={styles.textContainer}>
+        <Text style={styles.welcomeText}>환영합니다.  N!과 함께</Text>
+        <Text style={styles.welcomeText}> 활기차고 건강한 생활을 해보아요!</Text>
+      </View>
       <TouchableOpacity onPress={link} style={styles.loginButton}>
-        <Text>Login</Text>
+        <Image 
+          source={require('../../../assets/images/kakao_login_medium_narrow.png')} 
+          style={styles.loginButtonImage} 
+        />
       </TouchableOpacity>
-    </View>
+    </ImageBackground>
   );
 }
 
@@ -39,13 +31,31 @@ const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+  },
+  textContainer: {
+    alignItems: 'center',
+    marginBottom: 400, 
+  },
+  welcomeText: {
+    fontSize: 25,
+    color: themeColors.yellow1,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textShadowColor: '#000', 
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10
   },
   loginButton: {
-    backgroundColor: '#f0f0f0',
     padding: 10,
     borderRadius: 5,
-    marginTop: 20
+    marginTop: 20,
+    position: 'absolute',
+    bottom: 100 // Position button a bit above the bottom
+  },
+  loginButtonImage: {
+    width: 200,
+    height: 50
   }
 });
 

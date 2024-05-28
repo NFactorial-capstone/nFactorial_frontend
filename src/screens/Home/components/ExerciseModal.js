@@ -1,37 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, TextInput, ScrollView, Dimensions } from 'react-native';
-import { exerciseArr, exercise_back_arr, exercise_chest_Arr, FoodArr } from './data/category-list';
+import { exerciseArr} from './data/category-list';
 import axios from 'axios';
 import themeColors from '../../../../assets/styles/themeColors';
 
-const ExerciseModal = ({ isVisible, onClose }) => {
+const ExerciseModal = ({ isVisible, onClose, selectedDate, onDataReceived }) => {
   const [modalView, setModalView] = useState('bodyPart');
   const [nameList, setNameList] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedExercises, setSelectedExercises] = useState([]); // 선택된 운동 리스트 상태 변수
 
-
-  const fetchData = async (muscle) => {
+  const fetchData = async (themuscle) => {
     try {
       const response = await axios.post('http://52.68.188.192:8080/backend/exercise/part', 
         {}, 
-        { params: { muscle } }
+        { params: { muscle: `{${themuscle}}` } }
       );
       const fetchedNameList = response.data.map(item => item.name);
-      console.log(fetchedNameList);
-      console.log(muscle, "버튼이 눌렸습니다.");
       setNameList(fetchedNameList);
     } catch (error) {
       console.error('http error, post', error);
     }
   };
 
-  const handleSearch = () => {
-    fetchData(searchQuery);
+  const handleButtonPress = (muscle) => {
+    setSearchQuery(muscle);
+    fetchData(muscle);
+    setModalView('workOut');
   };
 
-  const handleButtonPress = (muscle) => {
-    setModalView('workOut');
-    fetchData(muscle);
+  const handleExerciseSelect = (exercise) => {
+    if (!selectedExercises.includes(exercise)) {
+      setSelectedExercises([...selectedExercises, exercise]);
+    }
+  };
+
+  const handleExerciseRemove = (exercise) => {
+    setSelectedExercises(selectedExercises.filter(item => item !== exercise));
   };
 
   const render = () => {
@@ -57,7 +62,7 @@ const ExerciseModal = ({ isVisible, onClose }) => {
           </TouchableOpacity>
           <ScrollView style={styles.scrollView}>
             {nameList.map((name, index) => (
-              <TouchableOpacity key={index} style={styles.workOutButton}>
+              <TouchableOpacity key={index} style={styles.workOutButton} onPress={() => handleExerciseSelect(name)}>
                 <Text style={styles.buttonText}>{name}</Text>
               </TouchableOpacity>
             ))}
@@ -69,6 +74,20 @@ const ExerciseModal = ({ isVisible, onClose }) => {
     }
   };
 
+  ////////////////////db에 저장
+  const handleSaveAndClose = async () => {
+    try {
+
+    } catch (error) {
+      console.error('Error saving food data', error);
+    } finally {
+      onDataReceived(selectedExercises);
+      onClose();
+    }
+  };
+
+
+
   return (
     <Modal
       animationType="slide"
@@ -78,19 +97,22 @@ const ExerciseModal = ({ isVisible, onClose }) => {
     >
       <View style={styles.modalView}>
         <Text style={styles.modalTitle}>운동 계획하기</Text>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="검색어를 입력하세요"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onSubmitEditing={handleSearch}
-        />
+        <Text style={{ color: themeColors.navy0 }}>
+          {selectedDate ? selectedDate.format('YYYY-MM-DD') : '날짜가 선택되지 않았습니다'}
+        </Text>
         {render()}
         <View style={styles.modalInputView}>
-          <Text style={styles.modalInputText}>test</Text>
+        {selectedExercises.map((exercise, index) => (
+          <View key={index} style={styles.selectedExerciseItem}>
+          <TouchableOpacity style={styles.removeButton} onPress={() => handleExerciseRemove(exercise)}>
+          <Text style={styles.removeButtonText}>-</Text>
+          </TouchableOpacity>
+          <Text style={styles.selectedExerciseText}>    {exercise}</Text>
+          </View>
+          ))}
         </View>
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Text style={styles.closeButtonText}>닫기</Text>
+          <Text style={styles.closeButtonText} onPress={handleSaveAndClose}>닫기</Text>
         </TouchableOpacity>
       </View>
     </Modal>
@@ -187,6 +209,24 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 5,
   },
+  selectedExerciseItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+    },
+    removeButton: {
+      backgroundColor : themeColors.navy1,
+      width: 30,
+      height: 30,
+      borderRadius: 5,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    removeButtonText: {
+    color: themeColors.white0,
+    fontWeight: 'bold',
+    fontSize: 20,
+    },
 });
 
 export default ExerciseModal;

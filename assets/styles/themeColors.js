@@ -9,7 +9,7 @@ const themeColors={
     orange1: 'FF9771',
 
     yellow0: '#F39C12',
-    yellw1: '#F5B041',
+    yellow1: '#F5B041',
 
     white0: '#FDFEFE',
     white1: '#E5E7E9'

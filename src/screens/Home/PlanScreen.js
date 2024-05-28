@@ -4,7 +4,8 @@ import {ProgressChart} from "react-native-chart-kit";
 
 import ProgressBox from './components/ProgressBox'
 import PhysicalBox from './components/PhysicalBox'
-import TouchBox from './components/TouchBox';
+import DietaryBox from './components/DietaryBox';
+import ExerciseBox from './components/ExerciseBox';
 import Calendar from './components/Calendar'
 import themeColors from '../../../assets/styles/themeColors';
 
@@ -27,11 +28,10 @@ const PlanScreen = () => {
     <View style={{justifyContent: 'center', alignContent: 'center'}}>
       <ScrollView>
           <Calendar onDateSelected={handleDateSelected} />
-          {selectedDate && <Text>선택된 날짜: {selectedDate.format('YYYY-MM-DD')}</Text>}
           <ProgressBox gauge= "0"/>
           <PhysicalBox onWeightChange = {handleWeightChange}/>
-          <TouchBox select_category="운동"/>
-          <TouchBox select_category="식단"/>
+          <ExerciseBox selectedDate={selectedDate}/>
+          <DietaryBox selectedDate={selectedDate}/>
       </ScrollView>
 
     </View>

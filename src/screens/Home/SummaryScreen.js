@@ -62,13 +62,9 @@ const Caloriedata = {
         data: [2000, 2100, 2200, 2300, 2400, 2100],
         color: (opacity = 1) => themeColors.navy0,
         strokeWidth: 2
-      },{
-        data: [1500, 1700, 1600, 1500, 1400, 1700],
-        color: (opacity = 1) => themeColors.yellow0,
-        strokeWidth: 2            
       }
     ],
-    legend: ["섭취 칼로리", "소모 칼로리"]
+    legend: ["섭취 칼로리"]
 
   };
 

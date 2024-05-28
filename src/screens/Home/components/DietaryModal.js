@@ -3,12 +3,11 @@ import { View, Text, TouchableOpacity, StyleSheet, Modal, ScrollView, TextInput,
 import axios from 'axios';
 import themeColors from '../../../../assets/styles/themeColors';
 
-const DietaryModal = ({ isVisible, onClose }) => {
+const DietaryModal = ({ isVisible, onClose, selectedDate, onDataReceived }) => {
   const [nameList, setNameList] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFoods, setSelectedFoods] = useState([]);
+  const [selectedFoods, setSelectedFoods] = useState({});
   const [filteredList, setFilteredList] = useState([]);
-  const [foodQuantities, setFoodQuantities] = useState({});
 
   const fetchData = async () => {
     try {
@@ -40,53 +39,55 @@ const DietaryModal = ({ isVisible, onClose }) => {
   }, [searchQuery, nameList]);
 
   const handleFoodSelect = (food) => {
-    if (!selectedFoods.includes(food)) {
-      setSelectedFoods([...selectedFoods, food]);
-      setFoodQuantities({ ...foodQuantities, [food]: 100 });
+    if (!selectedFoods[food]) {
+      setSelectedFoods({ ...selectedFoods, [food]: 100 });
     }
   };
 
   const handleQuantityChange = (food, change) => {
-    setFoodQuantities(prevQuantities => ({
-      ...prevQuantities,
-      [food]: Math.max(0, prevQuantities[food] + change) // Prevent negative values
+    setSelectedFoods(prevFoods => ({
+      ...prevFoods,
+      [food]: Math.max(0, (prevFoods[food] || 0) + change) // Prevent negative values
     }));
   };
 
   const handleFoodRemove = (food) => {
-    setSelectedFoods(selectedFoods.filter(item => item !== food));
-    const { [food]: _, ...newQuantities } = foodQuantities;
-    setFoodQuantities(newQuantities);
+    const { [food]: _, ...newFoods } = selectedFoods;
+    setSelectedFoods(newFoods);
   };
 
 
-//선택된 음식 데이터 db에 저장
-const handleSaveAndClose = async () => {
-  try {
-    const foodData = selectedFoods.map(food => ({
-      email : "",
-      date: "",
-      foodName: food,
-      ml_g: foodQuantities[food]
-    }));
+  ////////////////////db에 저장
+  const handleSaveAndClose = async () => {
+    try {
+      const foodData = Object.keys(selectedFoods).map(food => ({
+        email: "test123@naver.com",
+        date: selectedDate.format('YYYY-MM-DD'),
+        foodName: food,
+        ml_g: selectedFoods[food]
+      }));
 
-    const params = foodData.reduce((acc, item, index) => {
-      acc[`foods[${index}][name]`] = item.name;
-      acc[`foods[${index}][quantity]`] = item.quantity;
-      return acc;
-    }, {});
+      const promises = Object.keys(selectedFoods).map(food => {
+        const params = {
+          email: "test123@naver.com",
+          date: selectedDate.format('YYYY-MM-DD'),
+          foodName: food,
+          ml_g: selectedFoods[food]
+        };
 
-    await axios.post('http://52.68.188.192:8080/backend/food/register', 
-    {},
-     { params });
-  } catch (error) {
-    console.error('Error saving food data', error);
-  } finally {      
-    onClose(); 
-  }
-};
+        return axios.post('http://52.68.188.192:8080/backend/food/register', {}, { params });
 
+      });
 
+      await Promise.all(promises);
+      const foodList = Object.keys(selectedFoods).map(food => `${food}: ${selectedFoods[food]}g`);
+    } catch (error) {
+      console.error('Error saving food data', error);
+    } finally {
+      onDataReceived(selectedFoods);
+      onClose();
+    }
+  };
 
   return (
     <Modal
@@ -97,6 +98,9 @@ const handleSaveAndClose = async () => {
     >
       <View style={styles.modalView}>
         <Text style={styles.modalTitle}>식단 계획하기</Text>
+        <Text style={{ color: themeColors.navy0, paddingBottom:10 }}>
+          {selectedDate ? selectedDate.format('YYYY-MM-DD') : '날짜가 선택되지 않았습니다.'}
+        </Text>
         <TextInput
           style={styles.searchInput}
           placeholder="검색어를 입력하세요"
@@ -114,7 +118,7 @@ const handleSaveAndClose = async () => {
         </View>
         <View style={styles.modalInputView}>
           <ScrollView>
-            {selectedFoods.map((food, index) => (
+            {Object.keys(selectedFoods).map((food, index) => (
               <View key={index} style={styles.foodItem}>
                 <TouchableOpacity onPress={() => handleFoodRemove(food)} style={styles.removeButton}>
                   <Text style={styles.quantityButtonText}>-</Text>
@@ -126,7 +130,7 @@ const handleSaveAndClose = async () => {
                   <TouchableOpacity onPress={() => handleQuantityChange(food, -100)} style={styles.quantityButton}>
                     <Text style={styles.quantityButtonText}>-</Text>
                   </TouchableOpacity>
-                  <Text style={styles.quantityText}>{foodQuantities[food]}g</Text>
+                  <Text style={styles.quantityText}>{selectedFoods[food]}g</Text>
                   <TouchableOpacity onPress={() => handleQuantityChange(food, 100)} style={styles.quantityButton}>
                     <Text style={styles.quantityButtonText}>+</Text>
                   </TouchableOpacity>
@@ -243,7 +247,6 @@ const styles = StyleSheet.create({
   },
   quantityButton: {
     backgroundColor: themeColors.yellow0,
-    padding: 5,
     borderRadius: 5,
     marginHorizontal: 10,
     width: 30,
@@ -262,16 +265,6 @@ const styles = StyleSheet.create({
   },
   foodInfo: {
     flexDirection: 'row',
-    alignItems: 'center',
-  },
-  removeButton: {
-    backgroundColor: themeColors.red0,
-    padding: 5,
-    borderRadius: 5,
-    marginRight: 10,
-    width: 30,
-    height: 30,
-    justifyContent: 'center',
     alignItems: 'center',
   },
   removeButton: {

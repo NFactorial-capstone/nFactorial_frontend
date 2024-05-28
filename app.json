@@ -12,13 +12,15 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nfactorial"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package" : "com.nfactorial"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -28,6 +30,30 @@
         "expo-image-picker",
         {
           "photosPermission": "Access Camera"
+        }  
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": [
+              "https://devrepo.kakao.com/nexus/content/groups/public/"
+            ],
+            "newArchEnabled" : true
+          },
+          "ios" : {
+            "newArchEnabled" : true
+          }
+        }
+      ],
+      [
+        "@react-native-kakao/core",
+        {
+          "nativeAppKey": "{{native app key}}",
+          "android": {
+          },
+          "ios": {
+          }
         }
       ]
     ]

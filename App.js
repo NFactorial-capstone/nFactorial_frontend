@@ -4,8 +4,8 @@ import Login from './src/screens/Login/Login'
 
 
 function App() {
-  return <AppNavigator/>;
-  // return <Login/>;
+  // return <AppNavigator/>;
+  return <Login/>;
 }
 
 export default App;
