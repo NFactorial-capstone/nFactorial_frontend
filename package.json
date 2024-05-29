@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "react-native-kakao-share-link": "^1.0.10"
+  }
+}
